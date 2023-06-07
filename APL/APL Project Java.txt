@@ -1,0 +1,375 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Main.java to edit this template
+ */
+package javaapplication40;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
+
+/**
+ *
+ * @author acer
+ */
+public class JavaApplication40 {
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(String[] args) {
+        Editor editor = new Editor("Reem", "123");
+        Student student = new Student("Reem", "123","12");
+        Course course = null;
+        String num =null , name=null, note=null;
+        String type=null;
+        String question=null;
+        String done=null;
+        int inx =0;
+        String updatedquestion=null;
+        
+        
+        
+        while(num!="3"){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Welcome to the Neat Notes!");
+        System.out.println("Are you 1)Editor, 2)Student or 3) to exit");
+        num = scanner.nextLine();
+        
+        switch(num){
+            
+            case "1":{
+        System.out.print("Enter your username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter your password: ");
+        String password = scanner.nextLine();
+        System.out.print("Enter the course name: ");
+        name = scanner.nextLine();
+        course = new Course(name);
+        
+               do{
+        
+
+        if (editor.login(username, password)) {
+            System.out.println("Please enter the option number: ");
+            System.out.println("1. Add a question");
+            System.out.println("2. Delete a question");
+            System.out.println("3. Update a question");
+            System.out.println("4. Add a note");
+            System.out.println("5. delete a note");
+            System.out.println("6. Update a question");
+            System.out.println("7. Display questions and notes");
+            int choice = scanner.nextInt();
+            scanner.nextLine(); 
+           
+
+            switch (choice) {
+             
+                case 1:
+                     
+                    
+                    System.out.print("Enter the types of the question (MCQ/Complete): ");
+                    type = scanner.nextLine();
+                    System.out.print("Enter the question: ");
+                    question = scanner.nextLine();
+
+                    if (type.equalsIgnoreCase("MCQ")) {
+                        course.add(question);
+                    } else if (type.equalsIgnoreCase("Complete")) {
+                        course.addComplete(question);
+                    } else {
+                        System.out.println("Invalid question type");
+                    }
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                    
+                    
+                case 2:
+                    
+                    System.out.print("Enter the types of the question (MCQ/Complete):");
+                    type = scanner.nextLine();
+                     if (type.equalsIgnoreCase("MCQ")) {
+                        course.delete(question);
+                    System.out.println("deleted successfully"); 
+                        course.displayQuestions();
+                    } else if (type.equalsIgnoreCase("Complete")) {
+                        course.deleteComplete(question);
+                        System.out.println("deleted successfully"); 
+                    } else {
+                        System.out.println("Invalid question type");
+                    }
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                    
+                case 3:{
+                    course.displayQuestions();
+                    System.out.print("Enter the types of the question (MCQ/Complete): ");
+                    type = scanner.nextLine();
+                    System.out.println("Enter the index of the question to be updated:");
+                    inx = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Enter the updated question:");
+                    question = scanner.nextLine();
+                    
+                    
+                    if (type.equalsIgnoreCase("MCQ")) {
+                        course.updateMCQ(inx, question);
+                      System.out.println("updated successfully"); 
+                    } else if (type.equalsIgnoreCase("Complete")) {
+                        course.updateComplete(inx,question);
+                        System.out.println("updated successfully"); 
+                    } else {
+                        System.out.println("Invalid question type!");
+                    }
+                    
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                }
+                
+                case 4:{
+                    
+                    System.out.print("Enter the note: ");
+                    note = scanner.nextLine();
+                    course.addNote(note);
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                    
+                }
+                
+                case 5:{
+                    course.deleteNote(note);
+                    System.out.println("deleted successfully"); 
+                        course.displayQuestions();
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                }
+                
+                case 6:{
+                    System.out.println("Enter the index of the note to be updated:");
+                    inx = scanner.nextInt();
+                    scanner.nextLine();
+                    System.out.println("Enter the updated note:");
+                    note = scanner.nextLine();
+                    course.updateNotes(inx, note);
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                }
+                
+                
+                
+                case 7:{
+                    course.displayQuestions();
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                    }
+                default:{
+                    System.out.println("Invalid input!");
+                    System.out.println("Are you done?");
+                    done = scanner.nextLine();
+                    break;
+                    }
+         
+            
+                }
+            
+            }
+        }while(done.equals("no"));
+            }
+            
+            case "2":{
+                
+        System.out.print("Enter student username: ");
+        String username = scanner.nextLine();
+        System.out.print("Enter student password: ");
+        String password = scanner.nextLine();
+        System.out.print("Enter student level: ");
+        String level = scanner.nextLine();
+        
+
+        if (student.login(username, password,level)) {
+            String couseName= course.getName();
+            System.out.println("1. "+couseName);
+            System.out.println("Select a course:");
+            
+            int choice = scanner.nextInt();
+            
+            switch (choice) {
+                case 1:
+                    course.displayQuestions();
+                    break;
+                    
+                    
+                default:
+                    System.out.println("Invalid option");
+                    break;
+            }
+        } else {
+            System.out.println("Failed to login");
+        }
+        
+        break;
+            }
+ 
+            default:
+                
+            
+            System.exit(0);
+            
+            
+            
+        }
+     
+}
+        
+      
+        
+        
+    }
+    }
+    
+
+class Course {
+    private String name;
+    private List<String> mcq;
+    private List<String> complete;
+    private List<String>notes;
+    
+
+    public Course(String name) {
+        this.name = name;
+        this.mcq = new ArrayList<>();
+        this.complete = new ArrayList<>();
+        this.notes = new ArrayList<>();
+        
+    }
+
+    public void add(String question) {
+        mcq.add(question);
+    }
+     public void addNote(String note) {
+        notes.add(note);
+    }
+
+    public void addComplete(String question) {
+        complete.add(question);
+    }
+
+    public void delete(String question) {
+        mcq.remove(question);
+    }
+    public void deleteNote(String note) {
+        notes.remove(note);
+    }
+
+    public void deleteComplete(String question) {
+        complete.remove(question);
+    }
+
+    public void updateMCQ(int index, String updatedQuestion) {
+        mcq.set(index, updatedQuestion);
+    }
+    
+    public void updateNotes(int index, String updatedNote) {
+        mcq.set(index, updatedNote);
+    }
+
+    public void updateComplete(int index, String updatedQuestion) {
+        complete.set(index, updatedQuestion);
+    }
+    
+
+    public void displayQuestions() {
+        System.out.println("MCQ Questions:");
+        for (String question : mcq) {
+            System.out.println(question);
+        }
+
+        System.out.println("Complete Questions:");
+        for (String question : complete) {
+            System.out.println(question);
+        }
+        
+        System.out.println("Notes:");
+        for (String note : notes) {
+            System.out.println(note);
+        }
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getName() {
+        return name;
+    }
+    
+    
+}
+
+class Person {
+    private String username;
+    private String password;
+
+     Person(String username, String password) {
+        this.username = username;
+        this.password = password;
+    }
+
+    public boolean login(String username, String password) {
+        return this.username.equals(username) && this.password.equals(password);
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+    
+    
+}
+class Editor extends Person {
+     String username;
+     String password;
+
+    Editor(String username, String password) {
+        super(username,password);
+       
+        
+    }
+
+}
+
+class Student extends Person{
+     String username;
+     String password;
+     String level;
+
+    public Student(String username, String password, String level) {
+        super(username,password);
+        this.level=level;
+    }
+    
+    
+ 
+    public boolean login(String username, String password, String level){
+        return super.getUsername().equals(username) && super.getPassword().equals(password) && this.level.equals(level) ; 
+    }
+    
+}

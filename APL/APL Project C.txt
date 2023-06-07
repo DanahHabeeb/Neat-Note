@@ -1,0 +1,395 @@
+/**************************
+
+                    Advanced Programming Language Project - using C 
+Areej Ahmed Saleh - Danah Habeeb Almuzel - Reem Shaker Almualem - Lulu Waleed Alduwaihi - Hana Ali Alomran
+
+***************************/
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/* Constraints */ 
+/* Each Constraint represent the max number for each variable */ 
+#define QUESTIONS_MAXIMUM 100
+#define COURSES_MAXIMUM 10
+#define STUDENTS_MAXIMUM 1
+#define NOTES_MAXIMUM 5
+
+/* Defining some structures for the entities of the program 
+Notice; C is not considered OOP but procedural, therefore we will use structures */
+
+/* Structure of the MCQ with an id, title */ 
+typedef struct {
+    int id;
+    char title[50];
+} MCQQuestion;
+
+/* Structure of complete the following question with an id, title */ 
+typedef struct {
+    int id;
+    char title[50];
+    char answer[100];
+} CompleteQuestion;
+
+/*Strcture of the admin user with id, name, and password */
+typedef struct {
+    int id;
+    char name[50];
+    char password[50];
+} Admin;
+
+/*Strcture of the student user with id, name, and password, the courses that are enrolled, and number of courses enrolled */
+typedef struct {
+    int id;
+    char name[50];
+    char password[50];
+    int enrolledCourses[COURSES_MAXIMUM];
+    int numCourses;
+} Student;
+
+typedef struct {
+    int id;
+    char content[200];
+} Notes;
+
+/*Strcture of the course with id, title, mcqs array, num of mcqs, array of complete the following question and 
+num of complete the following question */
+typedef struct {
+    int id;
+    char title[50];
+    MCQQuestion mcqQuestions[QUESTIONS_MAXIMUM];
+    int numMCQQuestions;
+    
+    CompleteQuestion completeQuestions[QUESTIONS_MAXIMUM];
+    int numCompleteQuestions;
+    
+    Notes notes[NOTES_MAXIMUM];
+    int numNotes;
+} Course;
+
+
+
+
+
+/*global vars */
+Admin admin;
+Student student;
+Student students[STUDENTS_MAXIMUM];
+Course courses[COURSES_MAXIMUM];
+int studentNum;
+int numOfStudents = 0;
+int numOfCourses = 0;
+
+
+/* declerations for funcations */ 
+void loginOfAdmin();
+void loginOfStudent();
+void adminMenu();
+void studentMenu(int studentNum);
+void addingCourse();
+void deletingCourse();
+void updatingCourse();
+void enrollingIntoCourse(int studentNum);
+void viewTestBank(int studentNum);
+
+/* The program starts here */ 
+/* Ask whether user is admin or student */ 
+int main() {
+    int userChoice;
+     do {
+        printf("1. Admin\n");
+        printf("2. Student\n");
+        printf("Enter your choice (0 to exit): ");
+        scanf("%d", &userChoice);
+
+        switch (userChoice) {
+            case 1:
+                 loginOfAdmin();
+                break;
+            case 2:
+                loginOfStudent();
+                break;
+            case 0:
+                printf("Exit...\n");
+                exit(0);
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (userChoice != 0);
+    
+    return 0;
+}
+
+/*Function that authenticate the user by taking the username and password of admin */ 
+void loginOfAdmin() {
+    printf("Admin Login\n");
+    printf("Username: ");
+    scanf("%s", admin.name);
+    printf("Password: ");
+    scanf("%s", admin.password);
+
+    adminMenu();
+}
+
+/*Function that let the user pick their choice of the program options and then calls a user-defined function 
+that does that job */
+void adminMenu() {
+    int choice;
+
+    printf("\nAdmin Menu\n");
+    printf("1. Add a course\n");
+    printf("2. Delete a course\n");
+    printf("3. Update a course\n");
+    printf("4. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            addingCourse();
+            break;
+        case 2:
+            deletingCourse();
+            break;
+        case 3:
+            updatingCourse();
+            break;
+        case 4:
+            main();
+        default:
+            printf("Invalid choice! Please try again\n");
+            adminMenu();
+            break;
+    }
+}
+
+/* Function that allows user to add a course  */
+void addingCourse() {
+    Course course;
+
+    printf("\nAdd a course\n");
+    printf("Enter the course ID: ");
+    scanf("%d", &course.id);
+    printf("Enter the course Title: ");
+    scanf("%s", course.title);
+    course.numMCQQuestions = 0;
+    course.numCompleteQuestions = 0;
+
+    courses[numOfCourses++] = course;
+
+    printf("Course was added successfully!\n");
+
+    adminMenu();
+}
+
+/* Function that allows user to delete a course  */
+void deletingCourse() {
+    int courseId, i;
+
+    printf("\nDelete a course\n");
+    printf("Enter the course ID: ");
+    scanf("%d", &courseId);
+
+    for (i = 0; i < numOfCourses; i++) {
+        if (courses[i].id == courseId) {
+            memmove(&courses[i], &courses[i + 1], (numOfCourses - i - 1) * sizeof(Course));
+            numOfCourses--;
+            printf("Course was deleted successfully!\n");
+            break;
+        }
+    }
+
+    if (i == numOfCourses) {
+        printf("Course not found!\n");
+    }
+
+    adminMenu();
+}
+
+void updatingCourse() {
+    int courseId, i;
+    Course *course;
+    int userQuestionChoice;
+
+    printf("\nUpdate a course\n");
+    printf("Enter the course ID: ");
+    scanf("%d", &courseId);
+
+    for (i = 0; i < numOfCourses; i++) {
+        if (courses[i].id == courseId) {
+            course = &courses[i];
+            break;
+        }
+    }
+
+    if (i == numOfCourses) {
+        printf("Course not found!\n");
+        adminMenu();
+    }
+    
+    
+    do {
+        printf("1.To add MCQs\n");
+        printf("2.To add complete the following questions\n");
+        printf("3.To add Notes\n");
+        printf("Enter your choice (0 to exit): ");
+        scanf("%d", &userQuestionChoice);
+
+        switch (userQuestionChoice) {
+            case 1:
+             printf("Enter the number of MCQs to add: ");
+             scanf("%d", &(course->numMCQQuestions));
+             
+             printf("Enter MCQs:\n");
+            for (i = 0; i < course->numMCQQuestions; i++) {
+               printf("Question %d:\n", i + 1);
+               printf("Enter the MCQ: ");
+               fgets(course->mcqQuestions[i].title, sizeof(course->mcqQuestions[i].title), stdin);
+               sscanf(course->mcqQuestions[i].title, "%[^\n]", course->mcqQuestions[i].title); // remove newline character from input
+               getchar(); // consume the newline character left in the input buffer
+            }
+              printf("Course was updated successfully!\n");
+                break;
+                
+            case 2:
+              printf("Enter the number of the complete the following questions to add: ");
+              scanf("%d", &(course->numCompleteQuestions));
+
+            printf("Enter complete the following questions:\n");
+            for (i = 0; i < course->numCompleteQuestions; i++) {
+              printf("Question %d:\n", i + 1);
+              printf("Enter the question: ");
+              fgets(course->completeQuestions[i].title, sizeof(course->completeQuestions[i].title), stdin);
+              sscanf(course->completeQuestions[i].title, "%[^\n]", course->completeQuestions[i].title); // remove newline character from input
+              getchar(); // consume the newline character left in the input buffer
+            }
+            printf("Course was updated successfully!\n");
+                break;
+            case 3: 
+            printf("Enter the number of notes you would like to add: ");
+             scanf("%d", &(course->numNotes));
+             
+             printf("Enter Notes:\n");
+            for (i = 0; i < course->numNotes; i++) {
+               printf("Note %d:\n", i + 1);
+               printf("Enter the Note: ");
+               scanf("%s", course->notes[i].content);
+               
+               fgets(course->notes[i].content, sizeof(course->notes[i].content), stdin);
+              sscanf(course->notes[i].content, "%[^\n]", course->notes[i].content); // remove newline character from input
+               getchar(); // consume the newline character left in the input buffer
+            }
+            printf("Course was updated successfully!\n");
+                break;
+            case 0:
+                printf("Exiting admin...\n");
+                main();
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+        }
+    } while (userQuestionChoice != 0);
+    
+}
+
+
+/*Function that authenticate the user by taking the username and password of student */ 
+void loginOfStudent() {
+    printf("\nStudent Login\n");
+    printf("Username: ");
+    scanf("%s", student.name);
+    printf("Password: ");
+    scanf("%s", student.password);
+
+    studentMenu(0); // Assuming only one student for simplicity
+}
+
+/*Function that let the user pick their choice of the program options and then calls a user-defined function 
+that does that job */
+void studentMenu(int studentNum) {
+    int choice;
+
+    printf("\nStudent Menu\n");
+    printf("1. Enroll to a course\n");
+    printf("2. View the course test bank \n");
+    printf("3. Exit\n");
+    printf("Enter your choice: ");
+    scanf("%d", &choice);
+
+    switch (choice) {
+        case 1:
+            enrollingIntoCourse(studentNum);
+            break;
+        case 2:
+            viewTestBank(studentNum);
+            break;
+        case 3:
+            main();
+        default:
+            printf("Invalid choice! Please try again \n");
+            studentMenu(studentNum);
+            break;
+    }
+}
+
+/*Function let student enroll into a course */ 
+void enrollingIntoCourse(int studentNum) {
+    int courseId, i;
+
+    printf("\nEnroll to a course \n");
+    printf("Enter the course ID: ");
+    scanf("%d", &courseId);
+
+    for (i = 0; i < numOfCourses; i++) {
+        if (courses[i].id == courseId) {
+            students[studentNum].enrolledCourses[students[studentNum].numCourses++] = courseId;
+            printf("Enrolled to course successfully!\n");
+            break;
+        }
+    }
+
+    if (i == numOfCourses) {
+        printf("Course not found!\n");
+    }
+
+    studentMenu(studentNum);
+}
+
+/*Function allow student to view course */
+void viewTestBank(int studentNum) {
+    int courseId, i;
+
+    printf("\nView Course\n");
+    printf("Enter the course ID: ");
+    scanf("%d", &courseId);
+
+    for (i = 0; i < numOfCourses; i++) {
+        if (courses[i].id == courseId) {
+            printf("Course: %s\n", courses[i].title);
+            
+            printf("The MCQs are: \n");
+            for (int j = 0; j < courses[i].numMCQQuestions; j++) {
+                printf("%d. %s\n", j + 1, courses[i].mcqQuestions[j].title);
+            }
+                
+            printf("Complete the followung questions are:\n");
+            for (int j = 0; j < courses[i].numCompleteQuestions; j++) {
+                printf("%d. %s\n", j + 1, courses[i].completeQuestions[j].title);
+            }
+            printf("The notes are:\n");
+            for (int j = 0; j < courses[i].numNotes; j++) {
+                printf("%d. %s\n", j + 1, courses[i].notes[j].content);
+            }
+            
+        
+        }
+    }
+
+    if (i == 0) {
+        printf("Course not found!\n");
+    }
+
+    studentMenu(studentNum);
+}
